@@ -90,6 +90,31 @@ app.delete("/movies/:id", async (req, res) => {
     res.status(200).send();
 });
 
+app.get("/movies/:genreName", async (req, res) => {
+
+    try {
+        const movisFilteredByGenreName = await prisma.movie.findMany({
+            include: {
+                genres: true,
+                languages: true
+            },
+            where: {
+                genres: {
+                    name: {
+                        equals: req.params.genreName,
+                        mode: "insensitive"
+                    }
+                }
+            }
+        });
+
+        res.status(200).send(movisFilteredByGenreName);
+
+    } catch (error) {
+        return res.status(500).send({ message: "fala ao filtar dilmes por genro" })
+    }
+});
+
 app.listen(port, () => {
     console.log(`Servidor em execução na porta ${port}`);
 });
